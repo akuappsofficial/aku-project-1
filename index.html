@@ -370,9 +370,12 @@ const cfg=providerConfig();state.model=cfg.models[0][0];populateProviderUI();sav
 $("#model").onchange=()=>{state.model=$("#model").value;$("#modelLabel").textContent=state.model;save()};
 $("#saveSettings").onclick=()=>{
 state.keys[state.provider]=$("#key").value.trim();
+state.keys.tavily=$("#tavilyKey").value.trim();
 state.model=$("#model").value||providerConfig().models[0][0];
-save();applyTheme();$("#modelLabel").textContent=state.model;$("#settings").close();toast(providerConfig().name+" settings saved")
+save();populateProviderUI();applyTheme();$("#modelLabel").textContent=state.model;$("#settings").close();toast("Settings saved — web search key saved")
 };
+$("#tavilyKey").addEventListener("input",e=>{state.keys.tavily=e.target.value;});
+$("#showTavily").onclick=()=>{const e=$("#tavilyKey");e.type=e.type==="password"?"text":"password";$("#showTavily").textContent=e.type==="password"?"Show":"Hide"};
 $("#testApi").onclick=async()=>{
 const key=$("#key").value.trim(),provider=state.provider,model=$("#model").value||providerConfig().models[0][0];
 if(!key){toast("Enter an API key first");return}
