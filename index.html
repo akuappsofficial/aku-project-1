@@ -144,12 +144,14 @@ button,.nav,.prompt,.agent-btn,.preview-btn,.round{touch-action:manipulation;-we
 @media(min-width:901px){.side-close{display:none}}
 
 @media(max-width:900px){#sideClose{display:flex!important;position:absolute!important;right:10px!important;top:18px!important;z-index:100!important;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;align-items:center!important;justify-content:center!important;border:1px solid var(--line)!important;border-radius:14px!important;background:var(--glass-strong)!important;color:var(--text)!important;font-size:28px!important;font-weight:500!important;line-height:1!important;cursor:pointer!important;pointer-events:auto!important;touch-action:manipulation!important;box-shadow:0 8px 24px rgba(0,0,0,.18)!important}}
+
+@media(max-width:900px){#sideClose{display:flex!important;position:absolute!important;right:10px!important;top:18px!important;z-index:9999!important;width:56px!important;height:56px!important;min-width:56px!important;min-height:56px!important;align-items:center!important;justify-content:center!important;pointer-events:auto!important;touch-action:manipulation!important;cursor:pointer!important;-webkit-tap-highlight-color:transparent!important}}
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="side" id="side">
-  <div class="brand"><div class="mark">A</div><div><b>Aku</b><small>Gemini AI workspace</small></div><button class="side-close" id="sideClose" type="button" aria-label="Close sidebar">×</button></div>
+  <div class="brand"><div class="mark">A</div><div><b>Aku</b><small>Gemini AI workspace</small></div><button class="side-close" id="sideClose" type="button" aria-label="Close sidebar" onclick="document.getElementById('side').classList.remove('open');document.getElementById('scrim').classList.remove('open')" onpointerup="this.blur()">×</button></div>
   <button class="new" id="newChat"><span>＋</span><b>New chat</b><kbd>⌘ K</kbd></button>
   <div class="label">Workspace</div>
   <button class="nav active" id="chatBtn">✦ &nbsp; Chat</button><button class="nav" id="agentBtn">◈ &nbsp; Agent Mode</button>
@@ -433,7 +435,7 @@ q("#streamToggle").onclick=()=>{streamingEnabled=!streamingEnabled;$("#streamTog
 $("#stopStreaming").onclick=()=>{if(activeController){activeController.abort();toast("Stopping stream…")}else if(busy)toast("Finishing current action…")};$("#send").onclick=e=>{if(busy){e.preventDefault();if(activeController){activeController.abort();toast("Stopping stream…")}}};
 q("[data-agent-mode]").forEach(b=>b.onclick=()=>{agentMode=b.dataset.agentMode;q("[data-agent-mode]").forEach(x=>x.classList.toggle("active",x===b));$("#agentModeHelp").textContent=agentMode==="build"?"Build, test, fix, and package with multiple models.":agentMode==="research"?"Research the web first, then feed findings into the agent build pipeline.":"Generate and execute Python directly in the browser."});
  q(".prompt").forEach(b=>b.onclick=()=>send(b.dataset.p));
-$("#menu").onclick=()=>openSide();const sideCloseBtn=$("#sideClose");if(sideCloseBtn){sideCloseBtn.onclick=e=>{e.preventDefault();e.stopPropagation();closeSide()};sideCloseBtn.addEventListener("touchend",e=>{e.preventDefault();e.stopPropagation();closeSide()},{passive:false})}document.addEventListener("click",e=>{if(e.target.closest("#sideClose")){e.preventDefault();e.stopPropagation();closeSide()}},{capture:true});window.addEventListener("keydown",e=>{if(e.key==="Escape")closeSide()});window.addEventListener("resize",()=>{if(innerWidth>900)closeSide()});$("#scrim").onclick=closeSide;
+$("#menu").onclick=()=>openSide();window.addEventListener("keydown",e=>{if(e.key==="Escape")closeSide()});window.addEventListener("resize",()=>{if(innerWidth>900)closeSide()});$("#scrim").onclick=closeSide;
 document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#newChat").click()}});
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(state.theme==="system")applyTheme()});
 function downloadBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1200)}
