@@ -221,14 +221,12 @@ models:[
 openrouter:{
 name:"OpenRouter",
 placeholder:"sk-or-v1-…",
-help:"One key can access many models. openrouter/free automatically selects an available free model.",
+help:"Current OpenRouter routes. The Free Models Router is the safest default because it selects a currently available free endpoint.",
 models:[
-["openrouter/free","Free Models Router"],
-["cognitivecomputations/dolphin3.0-mistral-24b:free","Dolphin 3.0 Mistral 24B — free • filter testing"],
-["cognitivecomputations/dolphin3.0-r1-mistral-24b:free","Dolphin 3.0 R1 Mistral 24B — free • filter testing"],
-["cognitivecomputations/dolphin-mistral-24b-venice-edition","Venice Uncensored — paid • filter testing"],
+["openrouter/free","Free Models Router — auto available"],
+["stealth/space-bunny-alpha","Space Bunny Alpha — free"],
 ["nvidia/nemotron-3-ultra:free","NVIDIA Nemotron 3 Ultra — free"],
-["google/gemma-4-31b-it:free","Google Gemma 4 31B — free"]
+["cognitivecomputations/dolphin-mistral-24b-venice-edition","Venice Uncensored — paid"]
 ]},
 mistral:{
 name:"Mistral",
@@ -292,7 +290,7 @@ if(chatMode==="python"){toolBusy("python","Running");renderBubble(bubble,"Prepar
 const live=piece=>{answer+=piece;renderBubble(bubble,answer);refreshChatPreview(answer);$("#chat").scrollTop=$("#chat").scrollHeight};let res,extract;
 const system="You are Aku, a browser-based AI assistant and coding workspace. Aku helps users chat, research the web, write and explain code, run Python in the browser, build responsive interfaces, and in Agent Mode plan, build, test, fix, preview, and package projects. You are aware of the current conversation and should use earlier user messages when relevant instead of treating each message as isolated. Be clear about what you can and cannot do. Never claim to have performed an action you did not actually perform. "+deviceInstructions()+(chatMode==="web"?" Use the supplied web research and cite useful sources.":"");
 if(provider==="gemini"){const contents=[{role:"user",parts:[{text:system}]},...s.messages.map(async m=>({role:m.role==="assistant"?"model":"user",parts:m===user?await geminiParts(promptText,filesForRequest):[{text:m.content}]}))];res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":"+(streamingEnabled?"streamGenerateContent?alt=sse":"generateContent"),{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:await Promise.all(contents)}),signal:(activeController=new AbortController()).signal});extract=extractGeminiText}
-else{const base=provider==="groq"?"https://api.groq.com/openai/v1/chat/completions":provider==="openrouter"?"https://openrouter.ai/api/v1/chat/completions":"https://api.mistral.ai/v1/chat/completions";const headers={"Content-Type":"application/json","Authorization":"Bearer "+key};if(provider==="openrouter"){headers["HTTP-Referer"]=location.href;headers["X-OpenRouter-Title"]="Aku AI"}res=await fetch(base,{method:"POST",headers,body:JSON.stringify({model,messages:[{role:"system",content:system},...s.messages.map(m=>m.role==="user"&&m.content===text?{...m,content:promptText}:m)],stream:streamingEnabled}),signal:(activeController=new AbortController()).signal});extract=j=>j.choices?.[0]?.delta?.content||""}
+else{const base=provider==="groq"?"https://api.groq.com/openai/v1/chat/completions":provider==="openrouter"?"https://openrouter.ai/api/v1/chat/completions":"https://api.mistral.ai/v1/chat/completions";const headers={"Content-Type":"application/json","Authorization":"Bearer "+key};if(provider==="openrouter"){headers["HTTP-Referer"]=location.href;headers["X-OpenRouter-Title"]="Aku AI"}res=await fetch(base,{method:"POST",headers,body:JSON.stringify({model:provider==="openrouter"?(PROVIDERS.openrouter.models.some(x=>x[0]===model)?model:"openrouter/free"):model,messages:[{role:"system",content:system},...s.messages.map(m=>m.role==="user"&&m.content===text?{...m,content:promptText}:m)],stream:streamingEnabled}),signal:(activeController=new AbortController()).signal});extract=j=>j.choices?.[0]?.delta?.content||""}
 if(streamingEnabled)await parseSSEStream(res,extract,live);else{const raw=await res.text();let d={};try{d=JSON.parse(raw)}catch{};answer=provider==="gemini"?extractGeminiText(d):d.choices?.[0]?.message?.content||d.candidates?.[0]?.content?.parts?.map(x=>x.text||"").join("")||raw;renderBubble(bubble,answer)}
 bubble.classList.remove("streaming");answer=answer||"No response returned.";renderBubble(bubble,answer);s.messages.push({role:"assistant",content:answer});save()}catch(err){bubble.classList.remove("streaming");if(err?.name==="AbortError"){renderBubble(bubble,answer||"⏹ Streaming stopped.");s.messages.push({role:"assistant",content:answer||"⏹ Streaming stopped."});save()}else{row.classList.add("error");renderBubble(bubble,err.message||"API call failed");toast(providerConfig().name+" request failed")}}finally{activeController=null;busy=false;toolIdle();$("#send").disabled=false;$("#send").textContent="↑";$("#send").classList.remove("stop");$("#stopStreaming").disabled=true;$("#chatLivePreview").classList.remove("streaming")}}
 let chatPreviewTimer=null,chatPreviewSource="";
