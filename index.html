@@ -71,7 +71,7 @@ dialog{width:min(470px,calc(100% - 26px));padding:0;border:1px solid var(--line)
 
 <script>
 (()=>{"use strict";
-const $=s=>document.querySelector(s),$=s=>document.querySelectorAll(s);
+const $=s=>document.querySelector(s),q=s=>document.querySelectorAll(s);
 document.addEventListener("click",e=>{const agent=e.target.closest("#agentBtn"),chat=e.target.closest("#chatBtn");if(agent){e.preventDefault();const p=document.querySelector("#agentPage"),ch=document.querySelector("#chat"),co=document.querySelector("#composer");p?.classList.add("active");if(ch)ch.style.display="none";if(co)co.style.display="none";agent.classList.add("active");document.querySelector("#side")?.classList.remove("open");document.querySelector("#scrim")?.classList.remove("open");history.replaceState(null,"","#agent")}else if(chat){e.preventDefault();const p=document.querySelector("#agentPage"),ch=document.querySelector("#chat"),co=document.querySelector("#composer");p?.classList.remove("active");if(ch)ch.style.display="block";if(co)co.style.display="block";chat.classList.add("active");document.querySelector("#agentBtn")?.classList.remove("active");history.replaceState(null,"","#chat")}});
 const STORE="aku-multi-provider-single-v3";
 let state=JSON.parse(localStorage.getItem(STORE)||"null")||{provider:"gemini",keys:{gemini:"",groq:"",openrouter:"",mistral:""},model:"gemini-3.7-flash",theme:"system",sessions:[],active:null},busy=false;
@@ -81,7 +81,7 @@ const save=()=>localStorage.setItem(STORE,JSON.stringify(state));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 function current(){return state.sessions.find(x=>x.id===state.active)}
 function ensure(){if(!current()){const s={id:uid(),title:"New chat",messages:[]};state.sessions.unshift(s);state.active=s.id;save()}}
-function applyTheme(){let t=state.theme;if(t==="system")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.classList.toggle("dark",t==="dark");$$("[data-theme]").forEach(b=>b.classList.toggle("active",b.dataset.theme===state.theme))}
+function applyTheme(){let t=state.theme;if(t==="system")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.classList.toggle("dark",t==="dark");q("[data-theme]").forEach(b=>b.classList.toggle("active",b.dataset.theme===state.theme))}
 function toast(s){const e=$("#toast");e.textContent=s;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2600)}
 function resize(){const e=$("#input");e.style.height="auto";e.style.height=Math.min(e.scrollHeight,150)+"px"}
 function renderChats(){const e=$("#chats");e.innerHTML="";state.sessions.forEach(s=>{const r=document.createElement("div");r.className="chatrow";r.innerHTML='<span></span><button class="x" type="button">×</button>';r.querySelector("span").textContent=s.title;r.onclick=ev=>{if(ev.target.closest(".x"))return;state.active=s.id;save();renderChats();renderMessages();closeSide()};r.querySelector(".x").onclick=ev=>{ev.stopPropagation();state.sessions=state.sessions.filter(x=>x.id!==s.id);state.active=state.sessions[0]?.id||null;ensure();save();renderChats();renderMessages()};e.appendChild(r)})}
@@ -205,9 +205,9 @@ if(!res.ok)throw new Error(apiError(res.status,data));
 toast(providerConfig().name+" connection works");
 }catch(err){toast(err.message||"Connection test failed")}finally{btn.disabled=false;btn.textContent="Test connection"}
 };
-$$("[data-theme]").forEach(b=>b.onclick=()=>{state.theme=b.dataset.theme;save();applyTheme()});
+q("[data-theme]").forEach(b=>b.onclick=()=>{state.theme=b.dataset.theme;save();applyTheme()});
 $("#deleteChats").onclick=()=>{if(confirm("Delete all local chats?")){state.sessions=[];state.active=null;ensure();save();renderChats();renderMessages();toast("Chats deleted")}};
-$$(".prompt").forEach(b=>b.onclick=()=>send(b.dataset.p));
+q(".prompt").forEach(b=>b.onclick=()=>send(b.dataset.p));
 $("#menu").onclick=()=>{$("#side").classList.add("open");$("#scrim").classList.add("open")};$("#scrim").onclick=closeSide;
 document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#newChat").click()}});
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(state.theme==="system")applyTheme()});
