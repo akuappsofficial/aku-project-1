@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f7f7f5">
-<title>Aku — Grok AI</title>
+<title>Aku — Gemini AI</title>
 <style>
 :root{--bg:#f7f7f5;--surface:#fff;--soft:#f0f0ec;--line:#e1e1dc;--text:#181917;--muted:#777970;--faint:#a2a39b;--accent:#181917;--bubble:#ecece8}
 *{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
@@ -25,7 +25,7 @@ dialog{width:min(470px,calc(100% - 26px));padding:0;border:1px solid var(--line)
 <body>
 <div class="app">
 <aside class="side" id="side">
-  <div class="brand"><div class="mark">A</div><div><b>Aku</b><small>Grok AI workspace</small></div></div>
+  <div class="brand"><div class="mark">A</div><div><b>Aku</b><small>Gemini AI workspace</small></div></div>
   <button class="new" id="newChat"><span>＋</span><b>New chat</b><kbd>⌘ K</kbd></button>
   <div class="label">Workspace</div>
   <button class="nav active">✦ &nbsp; Chat</button>
@@ -36,9 +36,9 @@ dialog{width:min(470px,calc(100% - 26px));padding:0;border:1px solid var(--line)
 </aside>
 <div class="scrim" id="scrim"></div>
 <main class="main">
-<header class="top"><button class="icon mobile" id="menu">☰</button><div class="crumb"><span class="dot"></span><b id="modelLabel">grok-4.7</b><span>·</span><span>AI Chat</span></div><button class="icon" id="topSettings">⚙</button></header>
+<header class="top"><button class="icon mobile" id="menu">☰</button><div class="crumb"><span class="dot"></span><b id="modelLabel">gemini-3.7-flash</b><span>·</span><span>AI Chat</span></div><button class="icon" id="topSettings">⚙</button></header>
 <section class="chat" id="chat">
-<div class="welcome" id="welcome"><div class="eyebrow">AKU AI</div><h1>What are you building<br><span>today?</span></h1><p class="sub">Chat with Grok and turn ideas into something real.</p>
+<div class="welcome" id="welcome"><div class="eyebrow">AKU AI</div><h1>What are you building<br><span>today?</span></h1><p class="sub">Chat with Gemini and turn ideas into something real.</p>
 <div class="grid">
 <button class="prompt" data-p="Help me plan and build a modern web app"><i>✦</i><b>Build an app</b><small>Plan features and architecture</small></button>
 <button class="prompt" data-p="Give me creative ideas for a new project"><i>✧</i><b>Explore ideas</b><small>Brainstorm something new</small></button>
@@ -47,25 +47,32 @@ dialog{width:min(470px,calc(100% - 26px));padding:0;border:1px solid var(--line)
 </div></div>
 <div class="messages" id="messages"></div>
 </section>
-<form class="composer-wrap" id="composer"><div class="composer"><textarea id="input" rows="1" placeholder="Ask Grok anything…" autocomplete="off"></textarea><button class="round clear" id="clear" type="button">＋</button><button class="round send" id="send" type="submit">↑</button></div><div class="note">Grok can make mistakes. Verify important information.</div></form>
+<form class="composer-wrap" id="composer"><div class="composer"><textarea id="input" rows="1" placeholder="Ask Gemini anything…" autocomplete="off"></textarea><button class="round clear" id="clear" type="button">＋</button><button class="round send" id="send" type="submit">↑</button></div><div class="note">Gemini can make mistakes. Verify important information.</div></form>
 </main></div>
 
 <dialog id="settings">
 <div class="dh"><div><div class="eyebrow">PREFERENCES</div><h2>Settings</h2></div><button class="close" id="close">×</button></div>
-<div class="setting"><label>Grok API key</label><p>Stored only in this browser.</p><div class="key"><input id="key" type="password" placeholder="xai-…"><button id="showKey" type="button">Show</button></div></div>
-<div class="setting"><label>Model</label><select id="model"><option value="grok-4.7">grok-4.7</option></select></div>
+<div class="setting"><label>Gemini API key</label><p>Stored only in this browser. Get one from Google AI Studio.</p><div class="key"><input id="key" type="password" placeholder="AIza…"><button id="showKey" type="button">Show</button></div></div>
+<div class="setting"><label>Gemini model</label><p>These models currently have free-tier pricing; actual rate limits depend on your Google project.</p><select id="model">
+<option value="gemini-3.7-flash">Gemini 3.7 Flash — Free tier</option>
+<option value="gemini-3.6-flash">Gemini 3.6 Flash — Free tier</option>
+<option value="gemini-2.5-flash">Gemini 2.5 Flash — Free tier</option>
+<option value="gemini-2.5-flash-lite">Gemini 2.5 Flash-Lite — Free tier</option>
+</select>
+<div style="margin-top:8px;font-size:10px;color:var(--muted)">No universal 1,000 requests/day guarantee. Google applies model/project rate limits.</div></div>
 <div class="setting"><label>Theme</label><div class="seg"><button type="button" data-theme="system">System</button><button type="button" data-theme="light">Light</button><button type="button" data-theme="dark">Dark</button></div></div>
 <div class="danger"><button id="deleteChats" type="button">Delete all local chats</button></div>
+<button class="save" id="testApi" type="button">Test Gemini API</button>
 <button class="save" id="saveSettings" type="button">Save changes</button>
-<div class="security">Static app: your browser calls xAI directly. A client-side API key can be exposed, so use a restricted key and rotate it if it leaks.</div>
+<div class="security">Static app: your browser calls Google Gemini directly. A client-side API key can be exposed, so restrict the key and rotate it if it leaks.</div>
 </dialog>
 <div class="toast" id="toast"></div>
 
 <script>
 (()=>{"use strict";
 const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
-const STORE="aku-grok-single-v1";
-let state=JSON.parse(localStorage.getItem(STORE)||"null")||{key:"",model:"grok-4.7",theme:"system",sessions:[],active:null},busy=false;
+const STORE="aku-gemini-single-v2";
+let state=JSON.parse(localStorage.getItem(STORE)||"null")||{key:"",model:"gemini-3.7-flash",theme:"system",sessions:[],active:null},busy=false;
 const save=()=>localStorage.setItem(STORE,JSON.stringify(state));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 function current(){return state.sessions.find(x=>x.id===state.active)}
@@ -76,30 +83,71 @@ function resize(){const e=$("#input");e.style.height="auto";e.style.height=Math.
 function renderChats(){const e=$("#chats");e.innerHTML="";state.sessions.forEach(s=>{const r=document.createElement("div");r.className="chatrow";r.innerHTML='<span></span><button class="x" type="button">×</button>';r.querySelector("span").textContent=s.title;r.onclick=ev=>{if(ev.target.closest(".x"))return;state.active=s.id;save();renderChats();renderMessages();closeSide()};r.querySelector(".x").onclick=ev=>{ev.stopPropagation();state.sessions=state.sessions.filter(x=>x.id!==s.id);state.active=state.sessions[0]?.id||null;ensure();save();renderChats();renderMessages()};e.appendChild(r)})}
 function renderMessages(){ensure();const s=current();$("#welcome").style.display=s.messages.length?"none":"block";const e=$("#messages");e.innerHTML="";s.messages.forEach(m=>addMessage(m.role,m.content,false));$("#chat").scrollTop=$("#chat").scrollHeight}
 function addMessage(role,text,append=true){const r=document.createElement("div");r.className="msg "+role;r.innerHTML='<div class="avatar">'+(role==="user"?"You":"A")+'</div><div class="bubble"></div>';r.querySelector(".bubble").textContent=text;$("#messages").appendChild(r);if(append)$("#chat").scrollTop=$("#chat").scrollHeight;return r}
-function openSettings(){$("#key").value=state.key;$("#model").value=state.model;applyTheme();$("#settings").showModal()}
+function openSettings(){$("#key").value=state.key;$("#model").value=state.model||"gemini-3.7-flash";applyTheme();$("#settings").showModal()}
 function closeSide(){$("#side").classList.remove("open");$("#scrim").classList.remove("open")}
-function apiError(status,data){const detail=data?.error?.message||data?.message||data?.error||"";return "API call failed "+status+(detail?": "+detail:"")}
-async function send(raw){const text=raw.trim();if(!text||busy)return;ensure();const s=current();s.messages.push({role:"user",content:text});if(s.title==="New chat")s.title=text.slice(0,40)+(text.length>40?"…":"");save();renderChats();renderMessages();$("#input").value="";resize();busy=true;$("#send").disabled=true;
+function apiError(status,data){
+const detail=data?.error?.message||data?.message||data?.error?.status||"";
+let hint="";
+if(status===400)hint=" Check the model name and request format.";
+if(status===401)hint=" Check that your Gemini API key is valid.";
+if(status===403)hint=" Google rejected access. Check the API key, project, API enablement, restrictions, and model access in Google AI Studio.";
+if(status===404)hint=" The selected Gemini model is unavailable for this key/project.";
+if(status===429)hint=" You hit a Gemini rate limit. Try another free-tier model or wait for the limit to reset.";
+return "Gemini API call failed "+status+(detail?": "+detail:"")+hint
+}
+function extractGeminiText(j){
+return (j?.candidates||[]).map(c=>(c?.content?.parts||[]).map(p=>p?.text||"").join("")).join("")
+}
+async function send(raw){
+const text=raw.trim();if(!text||busy)return;ensure();const s=current();
+s.messages.push({role:"user",content:text});
+if(s.title==="New chat")s.title=text.slice(0,40)+(text.length>40?"…":"");
+save();renderChats();renderMessages();$("#input").value="";resize();busy=true;$("#send").disabled=true;
 const row=addMessage("assistant","Thinking…");row.querySelector(".bubble").classList.add("thinking");
-if(!state.key){row.querySelector(".bubble").textContent="Add your xAI API key in Settings first.";row.querySelector(".bubble").classList.remove("thinking");busy=false;$("#send").disabled=false;return}
+if(!state.key){
+row.querySelector(".bubble").textContent="Add your Gemini API key in Settings first.";
+row.querySelector(".bubble").classList.remove("thinking");busy=false;$("#send").disabled=false;return
+}
 try{
-const res=await fetch("https://api.x.ai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.key},body:JSON.stringify({model:"grok-4.7",messages:s.messages,stream:true})});
+const contents=s.messages.map(m=>({role:m.role==="assistant"?"model":"user",parts:[{text:m.content}]}));
+const url="https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(state.model)+":streamGenerateContent?alt=sse";
+const res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":state.key},body:JSON.stringify({contents})});
 const rawBody=await res.text();let data=null;try{data=JSON.parse(rawBody)}catch{}
 if(!res.ok)throw new Error(apiError(res.status,data));
 let answer="";row.querySelector(".bubble").classList.remove("thinking");
-if(res.body){const reader=res.body.getReader(),decoder=new TextDecoder();let buffer="";
-while(true){const part=await reader.read();if(part.done)break;buffer+=decoder.decode(part.value,{stream:true});const lines=buffer.split(/\r?\n/);buffer=lines.pop()||"";for(const line of lines){if(!line.startsWith("data:"))continue;const payload=line.slice(5).trim();if(!payload||payload==="[DONE]")continue;try{const j=JSON.parse(payload);const d=j.choices?.[0]?.delta?.content||"";if(d){answer+=d;row.querySelector(".bubble").textContent=answer;$("#chat").scrollTop=$("#chat").scrollHeight}}catch{}}}}
-if(!answer)answer=data?.choices?.[0]?.message?.content||"No response returned.";
+const lines=rawBody.split(/\r?\n/);
+for(const line of lines){
+if(!line.startsWith("data:"))continue;
+const payload=line.slice(5).trim();if(!payload)continue;
+try{const j=JSON.parse(payload);const d=extractGeminiText(j);if(d){answer+=d;row.querySelector(".bubble").textContent=answer;$("#chat").scrollTop=$("#chat").scrollHeight}}catch{}
+}
+if(!answer)answer=extractGeminiText(data)||"No response returned.";
 row.querySelector(".bubble").textContent=answer;s.messages.push({role:"assistant",content:answer});save()
-}catch(err){row.classList.add("error");row.querySelector(".bubble").classList.remove("thinking");row.querySelector(".bubble").textContent=err.message||"API call failed";toast("Grok request failed")}
-finally{busy=false;$("#send").disabled=false}}
+}catch(err){
+row.classList.add("error");row.querySelector(".bubble").classList.remove("thinking");row.querySelector(".bubble").textContent=err.message||"Gemini API call failed";toast("Gemini request failed")
+}finally{busy=false;$("#send").disabled=false}
+}
 $("#composer").onsubmit=e=>{e.preventDefault();send($("#input").value)};
 $("#input").oninput=resize;$("#input").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send($("#input").value)}};
 $("#clear").onclick=()=>{$("#input").value="";resize();$("#input").focus()};
 $("#newChat").onclick=()=>{state.active=null;ensure();save();renderChats();renderMessages();closeSide();$("#input").focus()};
 $("#settingsBtn").onclick=openSettings;$("#topSettings").onclick=openSettings;$("#close").onclick=()=>$("#settings").close();
 $("#showKey").onclick=()=>{const e=$("#key");e.type=e.type==="password"?"text":"password";$("#showKey").textContent=e.type==="password"?"Show":"Hide"};
-$("#saveSettings").onclick=()=>{state.key=$("#key").value.trim();state.model="grok-4.7";save();applyTheme();$("#modelLabel").textContent=state.model;$("#settings").close();toast("Settings saved")};
+$("#saveSettings").onclick=()=>{
+state.key=$("#key").value.trim();state.model=$("#model").value||"gemini-3.7-flash";save();applyTheme();$("#modelLabel").textContent=state.model;$("#settings").close();toast("Gemini settings saved")
+};
+$("#testApi").onclick=async()=>{
+const key=$("#key").value.trim(),model=$("#model").value||"gemini-3.7-flash";
+if(!key){toast("Enter a Gemini API key first");return}
+const btn=$("#testApi");btn.disabled=true;btn.textContent="Testing…";
+try{
+const url="https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(model)+":generateContent";
+const res=await fetch(url,{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":key},body:JSON.stringify({contents:[{role:"user",parts:[{text:"Reply with exactly: Gemini connection works."}]}]})});
+const raw=await res.text();let data=null;try{data=JSON.parse(raw)}catch{}
+if(!res.ok)throw new Error(apiError(res.status,data));
+toast("Gemini connection works");
+}catch(err){toast(err.message||"Gemini test failed")}finally{btn.disabled=false;btn.textContent="Test Gemini API"}
+};
 $$("[data-theme]").forEach(b=>b.onclick=()=>{state.theme=b.dataset.theme;save();applyTheme()});
 $("#deleteChats").onclick=()=>{if(confirm("Delete all local chats?")){state.sessions=[];state.active=null;ensure();save();renderChats();renderMessages();toast("Chats deleted")}};
 $$(".prompt").forEach(b=>b.onclick=()=>send(b.dataset.p));
