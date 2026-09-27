@@ -22,34 +22,6 @@ dialog{width:min(470px,calc(100% - 26px));padding:0;border:1px solid var(--line)
 @media(max-width:700px){.side{position:fixed;z-index:20;inset:0 auto 0 0;width:280px;transform:translateX(-100%);transition:.2s}.side.open{transform:none}.scrim{display:none;position:fixed;z-index:19;inset:0;background:#0007}.scrim.open{display:block}.mobile{display:block}.top{padding:0 9px}.welcome{padding:9vh 18px 160px}.welcome h1{font-size:42px}.grid{grid-template-columns:1fr}.messages{padding:25px 15px 160px}.composer-wrap{padding:14px 10px 9px}}
 @keyframes akuFade{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}@keyframes pulse{50%{opacity:.4}}.agent-page{display:none;max-width:1000px;width:100%;margin:auto;padding:40px 24px 150px;overflow:auto}.agent-page.active{display:block;animation:akuFade .3s ease}.agent-card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin:12px 0}.agent-input{width:100%;min-height:150px;resize:vertical;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--text);padding:13px}.agent-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.agent-btn{padding:10px 14px;border-radius:10px;background:var(--accent);color:var(--surface);font-weight:750}.agent-btn.secondary{background:var(--soft);color:var(--text)}.agent-btn:disabled{opacity:.45}.agent-step{display:flex;justify-content:space-between;padding:10px;border-radius:10px;background:var(--soft);font-size:12px;margin:7px 0}.agent-step.running .status{animation:pulse 1s infinite}.agent-step.done .status{color:#4baf68}.agent-output{overflow-wrap:anywhere;line-height:1.65;font-size:13px}.md h1,.md h2,.md h3{margin:18px 0 8px;line-height:1.2}.md p{margin:8px 0}.md code.inline{background:var(--soft);border:1px solid var(--line);padding:2px 6px;border-radius:6px}.codebox{margin:12px 0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--soft)}.codehead{display:flex;justify-content:space-between;padding:7px 10px;font-size:10px;color:var(--muted);border-bottom:1px solid var(--line)}.codecopy{background:var(--surface);border:1px solid var(--line);padding:5px 8px;border-radius:7px}.codebox pre{margin:0;padding:12px;overflow:auto;font:12px/1.65 ui-monospace,monospace;background:var(--surface);white-space:pre}.md strong{font-weight:800}.md em{font-style:italic}.md-list{margin:5px 0}.md-gap{height:5px}.md blockquote{margin:10px 0;padding:8px 12px;border-left:3px solid var(--line);color:var(--muted);background:var(--soft);border-radius:0 8px 8px 0}.file-tabs{display:flex;gap:6px;overflow:auto;margin-bottom:8px}.file-tabs button{white-space:nowrap;padding:8px 10px;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--muted);font-size:11px}.file-tabs button.active{background:var(--accent);color:var(--surface)}.streaming::after{content:"";display:inline-block;width:6px;height:1.05em;margin-left:3px;background:currentColor;animation:pulse .7s infinite}.agent-files{display:grid;gap:8px}.file-row{display:flex;gap:10px;align-items:center;padding:10px;border:1px solid var(--line);border-radius:10px}.file-row span{flex:1;font-size:12px}.file-row button{background:var(--soft);padding:7px 10px;border-radius:8px}.agent-note,.py-status{font-size:10px;color:var(--muted);line-height:1.5}.prompt,.composer,.chatrow,.nav{transition:.18s ease}.prompt:hover{transform:translateY(-2px);box-shadow:0 10px 28px #0000000b}.agent-preview{margin-top:16px}.preview-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px}.preview-status{font-size:11px;color:var(--muted)}.preview-frame{width:100%;height:520px;border:1px solid var(--line);border-radius:18px;background:#fff;display:block}.preview-actions{display:flex;gap:8px;flex-wrap:wrap}.preview-btn{border:1px solid var(--line);background:var(--panel);color:var(--text);border-radius:10px;padding:8px 11px;cursor:pointer}.preview-btn:hover{border-color:var(--accent)}
 
-/* Motion system: polished, lightweight, and accessibility-aware */
-:root{--ease-out:cubic-bezier(.22,1,.36,1);--ease-spring:cubic-bezier(.16,1,.3,1)}
-body{animation:pageIn .55s var(--ease-out) both}
-.sidebar{transition:transform .38s var(--ease-spring),box-shadow .38s ease}
-button,.nav-btn,.chat-item,.setting,.agent-card,.codebox,.composer,.topbar{transition:transform .22s var(--ease-out),opacity .22s ease,box-shadow .28s ease,border-color .22s ease,background-color .22s ease}
-button:hover,.nav-btn:hover{transform:translateY(-1px)}
-button:active,.nav-btn:active{transform:translateY(1px) scale(.98)}
-.chat-item:hover,.agent-card:hover,.setting:hover{transform:translateY(-2px)}
-.agent-card{animation:cardIn .5s var(--ease-out) both}
-.agent-card:nth-of-type(2){animation-delay:.04s}.agent-card:nth-of-type(3){animation-delay:.08s}.agent-card:nth-of-type(4){animation-delay:.12s}.agent-card:nth-of-type(5){animation-delay:.16s}
-.agent-page.active h1{animation:heroIn .65s var(--ease-out) both}
-.agent-page.active .agent-note{animation:heroIn .65s .06s var(--ease-out) both}
-.agent-step.running .status{animation:statusPulse 1.2s ease-in-out infinite}
-.agent-step.done .status{animation:donePop .35s var(--ease-spring)}
-.agent-output.streaming{animation:streamGlow 1.8s ease-in-out infinite}
-.codebox,.agent-files{animation:fadeUp .4s var(--ease-out) both}
-.preview-frame{animation:previewIn .5s var(--ease-out) both}
-#messages>.message{animation:messageIn .38s var(--ease-out) both}
-@keyframes pageIn{from{opacity:0}to{opacity:1}}
-@keyframes heroIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-@keyframes cardIn{from{opacity:0;transform:translateY(10px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes messageIn{from{opacity:0;transform:translateY(7px) scale(.99)}to{opacity:1;transform:translateY(0) scale(1)}}
-@keyframes previewIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
-@keyframes statusPulse{0%,100%{opacity:.55}50%{opacity:1}}
-@keyframes donePop{0%{transform:scale(.9);opacity:.5}70%{transform:scale(1.06)}100%{transform:scale(1);opacity:1}}
-@keyframes streamGlow{0%,100%{opacity:.92}50%{opacity:1}}
-@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}.agent-card,.chat-item,.setting,button,.nav-btn{transform:none!important}}
 </style>
 </head>
 <body>
