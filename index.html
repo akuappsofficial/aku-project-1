@@ -1,32 +1,113 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#f7f7f5"><title>Aku — Grok Workspace</title><link rel="stylesheet" href="styles.css?v=3"></head>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f7f7f5">
+<title>Aku — Grok AI</title>
+<style>
+:root{--bg:#f7f7f5;--surface:#fff;--soft:#f0f0ec;--line:#e1e1dc;--text:#181917;--muted:#777970;--faint:#a2a39b;--accent:#181917;--bubble:#ecece8}
+*{box-sizing:border-box}html,body{margin:0;height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text)}
+body.dark{--bg:#0c0d0d;--surface:#121413;--soft:#1b1d1c;--line:#292c2a;--text:#f2f3ef;--muted:#969a93;--faint:#686c66;--accent:#f1f2ed;--bubble:#1d201e}
+button,input,textarea,select{font:inherit}button{border:0;cursor:pointer;color:inherit}
+.app{height:100dvh;display:flex;overflow:hidden}.side{width:270px;flex:none;background:var(--surface);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 22px}.mark{width:35px;height:35px;border-radius:11px;background:var(--accent);color:var(--surface);display:grid;place-items:center;font-weight:900}.brand b{display:block}.brand small{color:var(--muted);font-size:10px}
+.new{height:44px;border:1px solid var(--line);background:var(--surface);border-radius:11px;display:flex;align-items:center;gap:8px;padding:0 12px}.new b{font-size:13px;flex:1;text-align:left}.new kbd{font-size:10px;color:var(--faint);background:var(--soft);padding:4px 6px;border-radius:5px}
+.label{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--faint);font-weight:800;padding:25px 10px 8px}.nav,.chatrow{width:100%;background:transparent;border-radius:9px;text-align:left;padding:10px;color:var(--muted);font-size:13px}.nav:hover,.chatrow:hover,.new:hover{background:var(--soft)}.nav.active{background:var(--soft);color:var(--text);font-weight:700}.chats{flex:1;overflow:auto}.chatrow{display:flex;gap:7px;align-items:center;font-size:12px}.chatrow span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}.chatrow .x{opacity:0;flex:none;background:transparent;color:var(--faint)}.chatrow:hover .x{opacity:1}.profile{border-top:1px solid var(--line);padding:13px 7px 3px;display:flex;gap:9px;align-items:center}.avatar{width:29px;height:29px;border-radius:9px;background:var(--soft);display:grid;place-items:center;font-size:11px;font-weight:800}.profile small{display:block;color:var(--muted);font-size:10px}.profile .dots{margin-left:auto;color:var(--faint)}
+.main{min-width:0;flex:1;display:flex;flex-direction:column;position:relative}.top{height:62px;flex:none;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 22px}.crumb{margin:auto;font-size:12px;display:flex;gap:8px;align-items:center}.dot{width:6px;height:6px;border-radius:50%;background:#49ad68}.icon{width:35px;height:35px;border-radius:9px;background:transparent;color:var(--muted)}.icon:hover{background:var(--soft)}.mobile{display:none}
+.chat{flex:1;overflow:auto}.welcome,.messages{max-width:900px;margin:auto}.welcome{padding:11vh 24px 170px}.eyebrow{font-size:10px;letter-spacing:.14em;font-weight:850;color:var(--muted)}h1{font-size:clamp(40px,5vw,62px);line-height:1.02;letter-spacing:-.055em;margin:12px 0 14px}h1 span{color:#888a83}.sub{color:var(--muted);font-size:15px;margin:0 0 36px}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;max-width:710px}.prompt{min-height:112px;text-align:left;padding:17px;border:1px solid var(--line);border-radius:14px;background:var(--surface);display:grid;grid-template-columns:28px 1fr;grid-template-rows:auto auto;gap:5px 7px;box-shadow:0 2px 10px #00000006}.prompt:hover{transform:translateY(-2px);border-color:#cfcfc9}.prompt i{grid-row:1/3;font-style:normal;color:var(--muted)}.prompt b{font-size:13px}.prompt small{color:var(--muted);font-size:11px}
+.messages{padding:32px 24px 180px}.msg{display:flex;gap:11px;margin:0 0 25px;line-height:1.7;font-size:14px}.msg .bubble{min-width:0;white-space:pre-wrap;overflow-wrap:anywhere}.msg.user .bubble{background:var(--bubble);padding:9px 13px;border-radius:14px;margin-top:-3px}.msg.error .bubble{color:#d96a6a}.thinking{color:var(--muted);font-style:italic}
+.composer-wrap{position:absolute;bottom:0;left:0;right:0;padding:20px 22px 14px;background:linear-gradient(transparent,var(--bg) 28%)}.composer{max-width:770px;margin:auto;background:var(--surface);border:1px solid #d6d6d1;border-radius:16px;padding:8px 8px 8px 14px;display:flex;align-items:flex-end;gap:6px;box-shadow:0 10px 35px #0000000d}.composer:focus-within{border-color:#bcbcb6}.composer textarea{flex:1;min-width:0;resize:none;max-height:150px;border:0;outline:0;background:transparent;color:var(--text);padding:7px 0;line-height:1.4}.round{width:35px;height:35px;border-radius:10px;display:grid;place-items:center}.clear{background:transparent;color:var(--muted);font-size:19px}.send{background:var(--accent);color:var(--surface);font-size:18px}.send:disabled{opacity:.35;cursor:wait}.note{text-align:center;color:var(--faint);font-size:9px;padding-top:7px}
+dialog{width:min(470px,calc(100% - 26px));padding:0;border:1px solid var(--line);border-radius:18px;background:var(--surface);color:var(--text);box-shadow:0 25px 80px #0003}dialog::backdrop{background:#0007;backdrop-filter:blur(4px)}.dh{padding:20px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}.dh h2{margin:4px 0 0}.close{background:transparent;font-size:24px;color:var(--muted)}.setting{padding:17px 22px 0}.setting label{font-size:12px;font-weight:750}.setting p{font-size:10px;color:var(--muted);margin:5px 0 8px}.key{display:flex;border:1px solid var(--line);border-radius:10px;overflow:hidden}.key input,.setting select{width:100%;border:0;outline:0;background:var(--soft);color:var(--text);padding:11px}.key button{background:var(--soft);padding:0 11px}.seg{display:flex;gap:3px;background:var(--soft);padding:3px;border-radius:10px}.seg button{flex:1;background:transparent;color:var(--muted);border-radius:7px;padding:8px;font-size:12px}.seg button.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px #0001}.danger{margin:19px 22px 0;padding-top:17px;border-top:1px solid var(--line)}.danger button{background:transparent;color:#c85f5f;font-size:12px}.save{width:calc(100% - 44px);margin:20px 22px 0;height:43px;border-radius:10px;background:var(--accent);color:var(--surface);font-weight:750}.security{text-align:center;color:var(--faint);font-size:9px;padding:12px 22px 20px}.toast{position:fixed;left:50%;bottom:82px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:var(--accent);color:var(--surface);padding:9px 13px;border-radius:9px;font-size:11px;transition:.2s}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:700px){.side{position:fixed;z-index:20;inset:0 auto 0 0;width:280px;transform:translateX(-100%);transition:.2s}.side.open{transform:none}.scrim{display:none;position:fixed;z-index:19;inset:0;background:#0007}.scrim.open{display:block}.mobile{display:block}.top{padding:0 9px}.welcome{padding:9vh 18px 160px}.welcome h1{font-size:42px}.grid{grid-template-columns:1fr}.messages{padding:25px 15px 160px}.composer-wrap{padding:14px 10px 9px}}
+</style>
+</head>
 <body>
-<div class="app-shell">
-<aside class="sidebar" id="sidebar">
-  <div class="brand"><div class="brand-mark">A</div><div><strong>Aku</strong><small>AI workspace</small></div></div>
-  <button class="new-chat" id="newChat"><span>＋</span><b>New chat</b><kbd>⌘ K</kbd></button>
-  <div class="section-title">Workspace</div>
-  <button class="nav-item active"><span>✦</span> Chat</button>
-  <button class="nav-item" id="settingsBtn"><span>⚙</span> Settings</button>
-  <div class="section-title chats-title">Recent chats</div>
-  <div class="sessions" id="sessions"></div>
-  <div class="sidebar-footer"><div class="profile"><div class="profile-avatar">A</div><div><b>Aku</b><small>Personal workspace</small></div><span>•••</span></div></div>
+<div class="app">
+<aside class="side" id="side">
+  <div class="brand"><div class="mark">A</div><div><b>Aku</b><small>Grok AI workspace</small></div></div>
+  <button class="new" id="newChat"><span>＋</span><b>New chat</b><kbd>⌘ K</kbd></button>
+  <div class="label">Workspace</div>
+  <button class="nav active">✦ &nbsp; Chat</button>
+  <button class="nav" id="settingsBtn">⚙ &nbsp; Settings</button>
+  <div class="label">Recent chats</div>
+  <div class="chats" id="chats"></div>
+  <div class="profile"><div class="avatar">A</div><div><b>Aku</b><small>Personal workspace</small></div><span class="dots">•••</span></div>
 </aside>
 <div class="scrim" id="scrim"></div>
 <main class="main">
-<header class="topbar"><button class="icon-btn mobile-only" id="menuBtn">☰</button><div class="crumb"><span class="live-dot"></span><b id="modelLabel">Grok</b><span class="crumb-muted">·</span><span>AI Chat</span></div><button class="icon-btn" id="topSettings">⚙</button></header>
+<header class="top"><button class="icon mobile" id="menu">☰</button><div class="crumb"><span class="dot"></span><b id="modelLabel">grok-4.7</b><span>·</span><span>AI Chat</span></div><button class="icon" id="topSettings">⚙</button></header>
 <section class="chat" id="chat">
-<div class="welcome" id="welcome">
-  <div class="eyebrow">AKU AI</div><h1>What are you building<br><span>today?</span></h1><p>Start a conversation with Grok and turn ideas into something real.</p>
-  <div class="prompt-grid">
-    <button data-prompt="Help me plan and build a modern web app"><span>✦</span><b>Build an app</b><small>Plan features and architecture</small></button>
-    <button data-prompt="Give me creative ideas for a new project"><span>✧</span><b>Explore ideas</b><small>Brainstorm something new</small></button>
-    <button data-prompt="Write a clean JavaScript component for me"><span>{ }</span><b>Write code</b><small>Build and explain code</small></button>
-    <button data-prompt="Teach me something interesting in a simple way"><span>◌</span><b>Learn something</b><small>Understand a new topic</small></button>
-  </div>
-</div>
+<div class="welcome" id="welcome"><div class="eyebrow">AKU AI</div><h1>What are you building<br><span>today?</span></h1><p class="sub">Chat with Grok and turn ideas into something real.</p>
+<div class="grid">
+<button class="prompt" data-p="Help me plan and build a modern web app"><i>✦</i><b>Build an app</b><small>Plan features and architecture</small></button>
+<button class="prompt" data-p="Give me creative ideas for a new project"><i>✧</i><b>Explore ideas</b><small>Brainstorm something new</small></button>
+<button class="prompt" data-p="Write a clean JavaScript component for me"><i>{ }</i><b>Write code</b><small>Build and explain code</small></button>
+<button class="prompt" data-p="Teach me something interesting in a simple way"><i>◌</i><b>Learn something</b><small>Understand a new topic</small></button>
+</div></div>
 <div class="messages" id="messages"></div>
 </section>
-<form class="composer-wrap" id="composer"><div class="composer"><textarea id="input" rows="1" placeholder="Ask Grok anything…" autocomplete="off"></textarea><button class="attach" id="clearInput" type="button">＋</button><button class="send" id="sendBtn" type="submit">↑</button></div><div class="composer-note">Grok may make mistakes. Verify important information.</div></form>
+<form class="composer-wrap" id="composer"><div class="composer"><textarea id="input" rows="1" placeholder="Ask Grok anything…" autocomplete="off"></textarea><button class="round clear" id="clear" type="button">＋</button><button class="round send" id="send" type="submit">↑</button></div><div class="note">Grok can make mistakes. Verify important information.</div></form>
 </main></div>
-<dialog id="settingsDialog"><div class="dialog-head"><div><span class="eyebrow">PREFERENCES</span><h2>Settings</h2></div><button class="close" id="closeSettings">×</button></div><div class="setting"><label>Grok API key</label><p>Stored locally in this browser.</p><div class="key-row"><input id="apiKey" type="password" placeholder="xai-…"><button id="toggleKey" type="button">Show</button></div></div><div class="setting"><label>Model</label><select id="model"><option value="grok-4.7">grok-4.7</option><option value="grok-4-1-fast-reasoning">grok-4-1-fast-reasoning</option><option value="grok-4-1-fast-non-reasoning">grok-4-1-fast-non-reasoning</option><option value="grok-4">grok-4</option></select></div><div class="setting"><label>Theme</label><div class="segmented"><button type="button" data-theme="system">System</button><button type="button" data-theme="light">Light</button><button type="button" data-theme="dark">Dark</button></div></div><div class="danger-zone"><button class="danger" id="clearChats" type="button">Delete all local chats</button></div><button class="save" id="saveSettings" type="button">Save changes</button><p class="security-note">Static app: requests go directly from your browser to xAI. Keep private API keys out of public deployments.</p></dialog><div class="toast" id="toast"></div><script src="app.js?v=3" defer></script></body></html>
+
+<dialog id="settings">
+<div class="dh"><div><div class="eyebrow">PREFERENCES</div><h2>Settings</h2></div><button class="close" id="close">×</button></div>
+<div class="setting"><label>Grok API key</label><p>Stored only in this browser.</p><div class="key"><input id="key" type="password" placeholder="xai-…"><button id="showKey" type="button">Show</button></div></div>
+<div class="setting"><label>Model</label><select id="model"><option value="grok-4.7">grok-4.7</option></select></div>
+<div class="setting"><label>Theme</label><div class="seg"><button type="button" data-theme="system">System</button><button type="button" data-theme="light">Light</button><button type="button" data-theme="dark">Dark</button></div></div>
+<div class="danger"><button id="deleteChats" type="button">Delete all local chats</button></div>
+<button class="save" id="saveSettings" type="button">Save changes</button>
+<div class="security">Static app: your browser calls xAI directly. A client-side API key can be exposed, so use a restricted key and rotate it if it leaks.</div>
+</dialog>
+<div class="toast" id="toast"></div>
+
+<script>
+(()=>{"use strict";
+const $=s=>document.querySelector(s),$$=s=>document.querySelectorAll(s);
+const STORE="aku-grok-single-v1";
+let state=JSON.parse(localStorage.getItem(STORE)||"null")||{key:"",model:"grok-4.7",theme:"system",sessions:[],active:null},busy=false;
+const save=()=>localStorage.setItem(STORE,JSON.stringify(state));
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+function current(){return state.sessions.find(x=>x.id===state.active)}
+function ensure(){if(!current()){const s={id:uid(),title:"New chat",messages:[]};state.sessions.unshift(s);state.active=s.id;save()}}
+function applyTheme(){let t=state.theme;if(t==="system")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.body.classList.toggle("dark",t==="dark");$$("[data-theme]").forEach(b=>b.classList.toggle("active",b.dataset.theme===state.theme))}
+function toast(s){const e=$("#toast");e.textContent=s;e.classList.add("show");setTimeout(()=>e.classList.remove("show"),2600)}
+function resize(){const e=$("#input");e.style.height="auto";e.style.height=Math.min(e.scrollHeight,150)+"px"}
+function renderChats(){const e=$("#chats");e.innerHTML="";state.sessions.forEach(s=>{const r=document.createElement("div");r.className="chatrow";r.innerHTML='<span></span><button class="x" type="button">×</button>';r.querySelector("span").textContent=s.title;r.onclick=ev=>{if(ev.target.closest(".x"))return;state.active=s.id;save();renderChats();renderMessages();closeSide()};r.querySelector(".x").onclick=ev=>{ev.stopPropagation();state.sessions=state.sessions.filter(x=>x.id!==s.id);state.active=state.sessions[0]?.id||null;ensure();save();renderChats();renderMessages()};e.appendChild(r)})}
+function renderMessages(){ensure();const s=current();$("#welcome").style.display=s.messages.length?"none":"block";const e=$("#messages");e.innerHTML="";s.messages.forEach(m=>addMessage(m.role,m.content,false));$("#chat").scrollTop=$("#chat").scrollHeight}
+function addMessage(role,text,append=true){const r=document.createElement("div");r.className="msg "+role;r.innerHTML='<div class="avatar">'+(role==="user"?"You":"A")+'</div><div class="bubble"></div>';r.querySelector(".bubble").textContent=text;$("#messages").appendChild(r);if(append)$("#chat").scrollTop=$("#chat").scrollHeight;return r}
+function openSettings(){$("#key").value=state.key;$("#model").value=state.model;applyTheme();$("#settings").showModal()}
+function closeSide(){$("#side").classList.remove("open");$("#scrim").classList.remove("open")}
+function apiError(status,data){const detail=data?.error?.message||data?.message||data?.error||"";return "API call failed "+status+(detail?": "+detail:"")}
+async function send(raw){const text=raw.trim();if(!text||busy)return;ensure();const s=current();s.messages.push({role:"user",content:text});if(s.title==="New chat")s.title=text.slice(0,40)+(text.length>40?"…":"");save();renderChats();renderMessages();$("#input").value="";resize();busy=true;$("#send").disabled=true;
+const row=addMessage("assistant","Thinking…");row.querySelector(".bubble").classList.add("thinking");
+if(!state.key){row.querySelector(".bubble").textContent="Add your xAI API key in Settings first.";row.querySelector(".bubble").classList.remove("thinking");busy=false;$("#send").disabled=false;return}
+try{
+const res=await fetch("https://api.x.ai/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+state.key},body:JSON.stringify({model:"grok-4.7",messages:s.messages,stream:true})});
+const rawBody=await res.text();let data=null;try{data=JSON.parse(rawBody)}catch{}
+if(!res.ok)throw new Error(apiError(res.status,data));
+let answer="";row.querySelector(".bubble").classList.remove("thinking");
+if(res.body){const reader=res.body.getReader(),decoder=new TextDecoder();let buffer="";
+while(true){const part=await reader.read();if(part.done)break;buffer+=decoder.decode(part.value,{stream:true});const lines=buffer.split(/\r?\n/);buffer=lines.pop()||"";for(const line of lines){if(!line.startsWith("data:"))continue;const payload=line.slice(5).trim();if(!payload||payload==="[DONE]")continue;try{const j=JSON.parse(payload);const d=j.choices?.[0]?.delta?.content||"";if(d){answer+=d;row.querySelector(".bubble").textContent=answer;$("#chat").scrollTop=$("#chat").scrollHeight}}catch{}}}}
+if(!answer)answer=data?.choices?.[0]?.message?.content||"No response returned.";
+row.querySelector(".bubble").textContent=answer;s.messages.push({role:"assistant",content:answer});save()
+}catch(err){row.classList.add("error");row.querySelector(".bubble").classList.remove("thinking");row.querySelector(".bubble").textContent=err.message||"API call failed";toast("Grok request failed")}
+finally{busy=false;$("#send").disabled=false}}
+$("#composer").onsubmit=e=>{e.preventDefault();send($("#input").value)};
+$("#input").oninput=resize;$("#input").onkeydown=e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send($("#input").value)}};
+$("#clear").onclick=()=>{$("#input").value="";resize();$("#input").focus()};
+$("#newChat").onclick=()=>{state.active=null;ensure();save();renderChats();renderMessages();closeSide();$("#input").focus()};
+$("#settingsBtn").onclick=openSettings;$("#topSettings").onclick=openSettings;$("#close").onclick=()=>$("#settings").close();
+$("#showKey").onclick=()=>{const e=$("#key");e.type=e.type==="password"?"text":"password";$("#showKey").textContent=e.type==="password"?"Show":"Hide"};
+$("#saveSettings").onclick=()=>{state.key=$("#key").value.trim();state.model="grok-4.7";save();applyTheme();$("#modelLabel").textContent=state.model;$("#settings").close();toast("Settings saved")};
+$$("[data-theme]").forEach(b=>b.onclick=()=>{state.theme=b.dataset.theme;save();applyTheme()});
+$("#deleteChats").onclick=()=>{if(confirm("Delete all local chats?")){state.sessions=[];state.active=null;ensure();save();renderChats();renderMessages();toast("Chats deleted")}};
+$$(".prompt").forEach(b=>b.onclick=()=>send(b.dataset.p));
+$("#menu").onclick=()=>{$("#side").classList.add("open");$("#scrim").classList.add("open")};$("#scrim").onclick=closeSide;
+document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#newChat").click()}});
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(state.theme==="system")applyTheme()});
+applyTheme();ensure();renderChats();renderMessages();resize();
+})();
+</script>
+</body>
+</html>
