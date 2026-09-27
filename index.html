@@ -135,12 +135,15 @@ button,.nav,.prompt,.agent-btn,.preview-btn,.round{touch-action:manipulation;-we
 @media(max-width:700px){.side{position:fixed;left:0;top:0;bottom:0;width:min(86vw,330px);z-index:60;transform:translateX(-105%);transition:transform .22s ease;overflow-y:auto}.side.open{transform:translateX(0)}#scrim{position:fixed;inset:0;background:rgba(0,0,0,.32);backdrop-filter:blur(3px);z-index:55;display:none}#scrim.open{display:block}.main{width:100%;min-width:0}.top{position:relative;z-index:10}.messages{padding-left:12px;padding-right:12px}.welcome{padding:18px 12px}.prompt{min-height:48px}.composer-wrap{padding-left:8px;padding-right:8px}.composer{border-radius:20px}.composer-actions{gap:6px}.composer-actions button{min-width:40px;min-height:40px}.modebar{max-width:100%;overflow-x:auto;white-space:nowrap}.agent-page{padding:14px}.agent-card{width:100%}.agent-toolbar{flex-wrap:wrap}.agent-preview{width:100%}.file-tabs{max-width:100%;overflow-x:auto}.preview-actions{flex-wrap:wrap}.preview-btn{min-height:40px}.msg{max-width:100%}.bubble{max-width:min(92vw,760px);overflow-wrap:anywhere}.codebox{max-width:100%;overflow:hidden}.codebox pre{overflow-x:auto;-webkit-overflow-scrolling:touch}.attach-panel{max-width:calc(100vw - 16px)}dialog{max-width:calc(100vw - 24px);width:calc(100vw - 24px);max-height:90dvh;overflow:auto}}
 @media(min-width:701px){#scrim{display:none!important}}
 @media(max-width:430px){.top{padding-left:8px;padding-right:8px}.top h1{font-size:17px}.welcome h2{font-size:26px}.welcome p{font-size:14px}.prompt-grid{grid-template-columns:1fr}.composer textarea{max-height:120px}.active-tool{max-width:48vw}.preview-frame{min-height:240px!important;height:50dvh!important}}
+
+@media(max-width:700px){.side{width:min(72vw,290px);max-width:290px}.brand{position:relative;padding-right:48px}.side-close{display:flex;position:absolute;right:4px;top:50%;transform:translateY(-50%);width:38px;height:38px;border:1px solid var(--line);border-radius:12px;background:var(--glass-strong);color:var(--text);align-items:center;justify-content:center;font-size:25px;line-height:1;cursor:pointer}.side-close:active{transform:translateY(-50%) scale(.94)}}
+@media(min-width:701px){.side-close{display:none}}
 </style>
 </head>
 <body>
 <div class="app">
 <aside class="side" id="side">
-  <div class="brand"><div class="mark">A</div><div><b>Aku</b><small>Gemini AI workspace</small></div></div>
+  <div class="brand"><div class="mark">A</div><div><b>Aku</b><small>Gemini AI workspace</small></div><button class="side-close" id="sideClose" type="button" aria-label="Close sidebar">×</button></div>
   <button class="new" id="newChat"><span>＋</span><b>New chat</b><kbd>⌘ K</kbd></button>
   <div class="label">Workspace</div>
   <button class="nav active" id="chatBtn">✦ &nbsp; Chat</button><button class="nav" id="agentBtn">◈ &nbsp; Agent Mode</button>
@@ -424,7 +427,7 @@ q("#streamToggle").onclick=()=>{streamingEnabled=!streamingEnabled;$("#streamTog
 $("#stopStreaming").onclick=()=>{if(activeController){activeController.abort();toast("Stopping stream…")}else if(busy)toast("Finishing current action…")};$("#send").onclick=e=>{if(busy){e.preventDefault();if(activeController){activeController.abort();toast("Stopping stream…")}}};
 q("[data-agent-mode]").forEach(b=>b.onclick=()=>{agentMode=b.dataset.agentMode;q("[data-agent-mode]").forEach(x=>x.classList.toggle("active",x===b));$("#agentModeHelp").textContent=agentMode==="build"?"Build, test, fix, and package with multiple models.":agentMode==="research"?"Research the web first, then feed findings into the agent build pipeline.":"Generate and execute Python directly in the browser."});
  q(".prompt").forEach(b=>b.onclick=()=>send(b.dataset.p));
-$("#menu").onclick=()=>openSide();$("#scrim").onclick=closeSide;
+$("#menu").onclick=()=>openSide();$("#sideClose").onclick=closeSide;window.addEventListener("keydown",e=>{if(e.key==="Escape")closeSide()});window.addEventListener("resize",()=>{if(innerWidth>700)closeSide()});$("#scrim").onclick=closeSide;
 document.addEventListener("keydown",e=>{if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("#newChat").click()}});
 matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{if(state.theme==="system")applyTheme()});
 function downloadBlob(blob,name){const u=URL.createObjectURL(blob),a=document.createElement("a");a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),1200)}
