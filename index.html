@@ -62,7 +62,7 @@ dialog{width:min(470px,calc(100% - 26px));padding:0;border:1px solid var(--line)
 <option value="mistral">Mistral</option>
 </select></div>
 <div class="setting"><label>API key</label><p id="keyHelp">Stored only in this browser.</p><div class="key"><input id="key" type="password" placeholder="API key…"><button id="showKey" type="button">Show</button></div></div>
-<div class="setting"><label>Model</label><select id="model"></select>
+<div class="setting"><label>Web search API</label><p>Optional Tavily key for deeper multi-result research. Stored only in this browser.</p><div class="key"><input id="tavilyKey" type="password" placeholder="Tavily API key…"><button id="showTavily" type="button">Show</button></div></div><div class="setting"><label>Model</label><select id="model"></select>
 <div id="modelHelp" style="margin-top:8px;font-size:10px;color:var(--muted)"></div></div>
 <div class="setting"><label>Theme</label><div class="seg"><button type="button" data-theme="system">System</button><button type="button" data-theme="light">Light</button><button type="button" data-theme="dark">Dark</button></div></div>
 <div class="danger"><button id="deleteChats" type="button">Delete all local chats</button></div>
@@ -78,8 +78,8 @@ const $=s=>document.querySelector(s),q=s=>document.querySelectorAll(s);
 document.addEventListener("click",e=>{const agent=e.target.closest("#agentBtn"),chat=e.target.closest("#chatBtn");if(agent){e.preventDefault();const p=document.querySelector("#agentPage"),ch=document.querySelector("#chat"),co=document.querySelector("#composer");p?.classList.add("active");if(ch)ch.style.display="none";if(co)co.style.display="none";agent.classList.add("active");document.querySelector("#side")?.classList.remove("open");document.querySelector("#scrim")?.classList.remove("open");history.replaceState(null,"","#agent")}else if(chat){e.preventDefault();const p=document.querySelector("#agentPage"),ch=document.querySelector("#chat"),co=document.querySelector("#composer");p?.classList.remove("active");if(ch)ch.style.display="block";if(co)co.style.display="block";chat.classList.add("active");document.querySelector("#agentBtn")?.classList.remove("active");history.replaceState(null,"","#chat")}});
 const STORE="aku-multi-provider-single-v3";
 let chatMode="chat",agentMode="build",streamingEnabled=true,activeController=null,attachedFiles=[];
-let state=JSON.parse(localStorage.getItem(STORE)||"null")||{provider:"gemini",keys:{gemini:"",groq:"",openrouter:"",mistral:""},model:"gemini-3.7-flash",theme:"system",sessions:[],active:null},busy=false;
-if(!state.keys)state.keys={gemini:state.key||"",groq:"",openrouter:"",mistral:""};
+let state=JSON.parse(localStorage.getItem(STORE)||"null")||{provider:"gemini",keys:{gemini:"",groq:"",openrouter:"",mistral:"",tavily:""},model:"gemini-3.7-flash",theme:"system",sessions:[],active:null},busy=false;
+if(!state.keys)state.keys={gemini:state.key||"",groq:"",openrouter:"",mistral:""};if(!("tavily" in state.keys))state.keys.tavily="";
 if(!state.provider)state.provider="gemini";
 const save=()=>localStorage.setItem(STORE,JSON.stringify(state));
 const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
@@ -138,19 +138,15 @@ models:[
 };
 function providerConfig(){return PROVIDERS[state.provider]||PROVIDERS.gemini}
 function deviceProfile(){const w=innerWidth,h=innerHeight,t=matchMedia("(pointer:coarse)").matches||"ontouchstart"in window,hover=matchMedia("(hover:hover)").matches,portrait=matchMedia("(orientation:portrait)").matches;let type=w<700?"phone":w<1024?"tablet":"desktop";return{type,width:w,height:h,orientation:portrait?"portrait":"landscape",touch:t,hover,devicePixelRatio:window.devicePixelRatio||1,controls:t?"Touch-friendly controls with large tap targets and swipe/press interactions where useful":"Mouse/trackpad and keyboard controls with hover states and keyboard shortcuts where useful"}}function deviceInstructions(){const d=deviceProfile();return "Detected browser context: "+JSON.stringify(d)+". Make the generated app responsive to this viewport and input method. Use CSS media queries and feature detection, not only user-agent detection. Provide appropriate touch or mouse/keyboard controls and accessible focus states."}
-async function webSearch(query){
-const q=String(query||"").trim();if(!q)return {text:"",sources:[]};
-const enc=encodeURIComponent(q),sources=[];let text="";
-try{const r=await fetch("https://s.jina.ai/"+enc,{headers:{"Accept":"text/plain"}});if(r.ok){const t=await r.text();text=t.slice(0,12000);[...t.matchAll(/https?:\/\/[^\s)]+/g)].slice(0,8).forEach(m=>sources.push({title:m[0],url:m[0]}))}}catch{}
-if(!text)try{const r=await fetch("https://api.duckduckgo.com/?q="+enc+"&format=json&no_html=1&skip_disambig=0&origin=*");const d=await r.json();text=[d.AbstractText,d.Answer,d.Definition,(d.RelatedTopics||[]).map(x=>x.Text).filter(Boolean).join("\n")].filter(Boolean).join("\n");if(d.AbstractURL)sources.push({title:d.Heading||"DuckDuckGo result",url:d.AbstractURL})}catch{}
-return {text:text||"No web results were returned.",sources}}
+async function webSearch(query){const q=String(query||"").trim();if(!q)return {text:"",sources:[]};const tavily=(state.keys?.tavily||"").trim();if(tavily){try{const r=await fetch("https://api.tavily.com/search",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({api_key:tavily,query:q,search_depth:"advanced",max_results:10,include_answer:true})});const d=await r.json();if(r.ok){const results=d.results||[];return {text:[d.answer,...results.map(x=>x.content||"")].filter(Boolean).join("\n\n").slice(0,30000),sources:results.map(x=>({title:x.title||x.url,url:x.url})).filter(x=>x.url)}}}catch{}}const enc=encodeURIComponent(q),sources=[];let text="";try{const r=await fetch("https://s.jina.ai/"+enc,{headers:{"Accept":"text/plain"}});if(r.ok){const t=await r.text();text=t.slice(0,12000);[...t.matchAll(/https?:\/\/[^\s)]+/g)].slice(0,8).forEach(m=>sources.push({title:m[0],url:m[0]}))}}catch{}if(!text)try{const r=await fetch("https://api.duckduckgo.com/?q="+enc+"&format=json&no_html=1&skip_disambig=0&origin=*");const d=await r.json();text=[d.AbstractText,d.Answer,d.Definition,(d.RelatedTopics||[]).map(x=>x.Text).filter(Boolean).join("\n")].filter(Boolean).join("\n");if(d.AbstractURL)sources.push({title:d.Heading||"DuckDuckGo result",url:d.AbstractURL})}catch{}return {text:text||"No web results were returned.",sources}}
+
 function renderWebSources(sources){const old=document.querySelector("#webSources");if(old)old.remove();if(!sources?.length)return;const box=document.createElement("div");box.id="webSources";box.className="web-sources";box.innerHTML="<b>Web sources</b>";sources.slice(0,8).forEach(x=>{const a=document.createElement("a");a.href=x.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent=x.title||x.url;box.appendChild(a)});$("#messages").appendChild(box)}
 async function requestOnce(p,m,k,prompt){return agentCallStream(p,m,k,[{role:"user",content:prompt}],()=>{})}
 async function runPythonCode(code){const py=await loadAgentPython();let out="";try{py.setStdout({batched:s=>{out+=s}});py.setStderr({batched:s=>{out+=s}});await py.runPythonAsync(code);return out||"(Python finished with no output.)"}catch(e){return "Python error: "+(e?.message||e)}}
 function providerKey(){return state.keys[state.provider]||""}
 function populateProviderUI(){
 const cfg=providerConfig();
-$("#key").value=providerKey();
+$("#key").value=providerKey();if($("#tavilyKey"))$("#tavilyKey").value=state.keys.tavily||"";
 $("#key").placeholder=cfg.placeholder;
 $("#keyHelp").textContent=cfg.help;
 const sel=$("#model");sel.innerHTML="";
