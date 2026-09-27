@@ -141,7 +141,7 @@ function deviceProfile(){const w=innerWidth,h=innerHeight,t=matchMedia("(pointer
 async function webSearch(query){
 const q=String(query||"").trim();if(!q)return {text:"",sources:[]};
 const enc=encodeURIComponent(q),sources=[];let text="";
-try{const r=await fetch("https://s.jina.ai/"+enc,{headers:{"Accept":"text/plain"}});if(r.ok){const t=await r.text();text=t.slice(0,12000);[...t.matchAll(/https?:\\/\\/[^\\s)]+/g)].slice(0,8).forEach(m=>sources.push({title:m[0],url:m[0]}))}}catch{}
+try{const r=await fetch("https://s.jina.ai/"+enc,{headers:{"Accept":"text/plain"}});if(r.ok){const t=await r.text();text=t.slice(0,12000);[...t.matchAll(/https?:\/\/[^\s)]+/g)].slice(0,8).forEach(m=>sources.push({title:m[0],url:m[0]}))}}catch{}
 if(!text)try{const r=await fetch("https://api.duckduckgo.com/?q="+enc+"&format=json&no_html=1&skip_disambig=0&origin=*");const d=await r.json();text=[d.AbstractText,d.Answer,d.Definition,(d.RelatedTopics||[]).map(x=>x.Text).filter(Boolean).join("\n")].filter(Boolean).join("\n");if(d.AbstractURL)sources.push({title:d.Heading||"DuckDuckGo result",url:d.AbstractURL})}catch{}
 return {text:text||"No web results were returned.",sources}}
 function renderWebSources(sources){const old=document.querySelector("#webSources");if(old)old.remove();if(!sources?.length)return;const box=document.createElement("div");box.id="webSources";box.className="web-sources";box.innerHTML="<b>Web sources</b>";sources.slice(0,8).forEach(x=>{const a=document.createElement("a");a.href=x.url;a.target="_blank";a.rel="noopener noreferrer";a.textContent=x.title||x.url;box.appendChild(a)});$("#messages").appendChild(box)}
